@@ -1,0 +1,27 @@
+{
+  "editor.formatOnSave": true,
+  "eslint.autoFixOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true
+  },
+  "markdownlint.config": {
+    "list-marker-space": false
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "dist": false,
+    "node_modules": true,
+    ".editorconfig": true,
+    ".gitignore": true,
+    ".prettierrc.toml": true,
+    "tsconfig.json": true,
+    "tslint.json": true,
+    "webpack.additions.js": true,
+    "yarn.lock": true
+  }
+}
