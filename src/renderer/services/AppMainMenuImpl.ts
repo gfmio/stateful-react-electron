@@ -4,87 +4,93 @@ import AppMainMenu from "../interfaces/AppMainMenu";
 import MenuActions from "../interfaces/MenuActions";
 import TypedEventEmitter from "../util/TypedEventEmitter";
 
+const quitMenuItem = {
+  accelerator: "Ctrl+Q",
+  click: () => remote.app.quit(),
+  label: "Quit",
+};
+
+const fileSubMenu: MenuItemConstructorOptions = {
+  label: "File",
+  submenu: [quitMenuItem],
+};
+
+const reloadMenuItem: MenuItemConstructorOptions = {
+  accelerator: "CmdOrCtrl+R",
+  click: (item, focusedWindow) => {
+    if (focusedWindow) {
+      // on reload, start fresh and close any old
+      // open secondary windows
+      if (focusedWindow.id === 1) {
+        remote.BrowserWindow.getAllWindows().forEach((win) => {
+          if (win.id > 1) {
+            win.close();
+          }
+        });
+      }
+      focusedWindow.reload();
+    }
+  },
+  label: "Reload",
+};
+
+const fullScreenMenuItem: MenuItemConstructorOptions = {
+  accelerator: process.platform === "darwin" ? "Ctrl+Command+F" : "F11",
+  click: (item, focusedWindow) => {
+    if (focusedWindow) {
+      focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+    }
+  },
+  label: "Toggle Full Screen",
+};
+
+const toggleDevToolsMenuItem: MenuItemConstructorOptions = {
+  accelerator: process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
+  click: (item, focusedWindow) => {
+    if (focusedWindow) {
+      (focusedWindow as any).toggleDevTools!();
+    }
+  },
+  label: "Toggle Developer Tools",
+};
+
+const viewSubMenu: MenuItemConstructorOptions = {
+  label: "View",
+  submenu: [reloadMenuItem, fullScreenMenuItem, toggleDevToolsMenuItem],
+};
+
 @injectable()
 class AppMainMenuImpl implements AppMainMenu {
   protected eventEmitter: TypedEventEmitter<MenuActions> = new TypedEventEmitter();
 
   protected get menu(): MenuItemConstructorOptions[] {
-    return [
-      {
-        label: "File",
-        submenu: [
-          {
-            accelerator: "Ctrl+Q",
-            click: () => remote.app.quit(),
-            label: "Quit",
+    return [fileSubMenu, viewSubMenu, this.runSubMenu];
+  }
+
+  protected get runSubMenu(): MenuItemConstructorOptions {
+    return {
+      label: "Run",
+      submenu: [
+        {
+          accelerator: "CmdOrCtrl+F",
+          click: () => {
+            this.eventEmitter.emit("MAKE_RED_CLICKED");
+            console.log("MAKE_RED_CLICKED", this.eventEmitter.listenerCount("MAKE_RED_CLICKED"));
           },
-        ],
-      },
-      {
-        label: "View",
-        submenu: [
-          {
-            accelerator: "CmdOrCtrl+R",
-            click: (item, focusedWindow) => {
-              if (focusedWindow) {
-                // on reload, start fresh and close any old
-                // open secondary windows
-                if (focusedWindow.id === 1) {
-                  remote.BrowserWindow.getAllWindows().forEach((win) => {
-                    if (win.id > 1) {
-                      win.close();
-                    }
-                  });
-                }
-                focusedWindow.reload();
-              }
-            },
-            label: "Reload",
+          enabled: this.eventEmitter.listenerCount("MAKE_RED_CLICKED") > 0,
+          label: "Toggle Red",
+        },
+        {
+          accelerator: "CmdOrCtrl+G",
+          click: () => {
+            this.eventEmitter.emit("MAKE_GREEN_CLICKED");
+            console.log("MAKE_GREEN_CLICKED", this.eventEmitter.listenerCount("MAKE_GREEN_CLICKED"));
           },
-          {
-            accelerator: process.platform === "darwin" ? "Ctrl+Command+F" : "F11",
-            click: (item, focusedWindow) => {
-              if (focusedWindow) {
-                focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
-              }
-            },
-            label: "Toggle Full Screen",
-          },
-          {
-            accelerator: process.platform === "darwin" ? "Alt+Command+I" : "Ctrl+Shift+I",
-            click: (item, focusedWindow) => {
-              if (focusedWindow) {
-                (focusedWindow as any).toggleDevTools!();
-              }
-            },
-            label: "Toggle Developer Tools",
-          },
-        ],
-      },
-      {
-        label: "Run",
-        submenu: [
-          {
-            accelerator: "CmdOrCtrl+F",
-            click: () => {
-              this.eventEmitter.emit("MAKE_RED_CLICKED");
-              console.log("MAKE_RED_CLICKED", this.eventEmitter.listenerCount("MAKE_RED_CLICKED"));
-            },
-            enabled: this.eventEmitter.listenerCount("MAKE_RED_CLICKED") > 0,
-            label: "Toggle Red",
-          },
-          {
-            accelerator: "CmdOrCtrl+G",
-            click: () => {
-              this.eventEmitter.emit("MAKE_GREEN_CLICKED");
-              console.log("MAKE_GREEN_CLICKED", this.eventEmitter.listenerCount("MAKE_GREEN_CLICKED"));
-            },
-            enabled: this.eventEmitter.listenerCount("MAKE_GREEN_CLICKED") > 0,
-            label: "Toggle Green",
-          },
-        ],
-      },
-    ];
+          enabled: this.eventEmitter.listenerCount("MAKE_GREEN_CLICKED") > 0,
+          label: "Toggle Green",
+        },
+      ],
+    };
   }
 
   public main() {
