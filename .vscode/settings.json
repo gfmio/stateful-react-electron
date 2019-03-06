@@ -5,7 +5,8 @@
     "source.fixAll.tslint": true
   },
   "markdownlint.config": {
-    "list-marker-space": false
+    "list-marker-space": false,
+    "no-inline-html": false
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "files.exclude": {
