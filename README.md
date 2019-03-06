@@ -18,12 +18,6 @@
   <a href="https://codeclimate.com/github/gfmio/stateful-react-electron">
     <img src="https://img.shields.io/codeclimate/tech-debt/gfmio/stateful-react-electron.svg" alt="Code Climate technical debt" title="Code Climate technical debt" />
   </a>
-  <a href="https://codeclimate.com/github/gfmio/stateful-react-electron">
-    <img src="https://img.shields.io/codeclimate/coverage/gfmio/stateful-react-electron.svg" alt="Code Climate coverage" title="Code Climate coverage" />
-  </a>
-  <a href="https://codeclimate.com/github/gfmio/stateful-react-electron">
-    <img src="https://img.shields.io/codeclimate/coverage-letter/gfmio/stateful-react-electron.svg" alt="Code Climate coverage (letter)" title="Code Climate coverage (letter)" />
-  </a>
 </p>
 
 A prototype Electron app built using TypeScript, React, Inversify and MobX, which demonstrates dynamic view-state dependent menu updates, dynamically responding to menu item actions, and persist local view state using sessionsStorage in between reloads.
